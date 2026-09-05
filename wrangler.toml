@@ -1,0 +1,5 @@
+name = "geweijing"
+compatibility_date = "2026-02-16"
+
+# 构建产物目录（注意：仓库根目录下执行 git 集成构建）
+pages_build_output_dir = "site/dist"
