@@ -25,7 +25,7 @@
   var touch = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
   var tiny = window.innerWidth <= 820
   var target = (isMobile || (tiny && (coarse || touch))) ? 'm/' : 'd/'
-  setTimeout(function () { location.replace(target) }, 350)
+  location.replace(target)
 })()
 </script>
 </body>

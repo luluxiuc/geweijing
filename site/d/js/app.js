@@ -5,22 +5,42 @@
   const page = document.body.dataset.page || ''
   const data = { poems: [], articles: [], images: [] }
 
+  /* 按页面按需加载数据（移动端首屏减负）：文章全文点开才下载 */
+  const DATA_URLS = {
+    poems: '../data/poems.json',
+    feed: '../data/feed.json',
+    articles: '../data/articles-index.json',
+    images: '../data/images.json',
+    route: '../data/route.json',
+    appreciation: '../data/appreciation.json',
+    remember: '../data/remember.json',
+    biography: '../data/biography.json'
+  }
+  const NEEDS = {
+    home: ['feed', 'remember', 'biography'],
+    poems: ['poems'],
+    articles: ['articles'],
+    tour: ['route', 'poems'],
+    gallery: ['images'],
+    appr: ['appreciation'],
+    memory: ['remember'],
+    about: []
+  }
   async function load() {
-    const [p, a, i, r, au, ap, rm, bg] = await Promise.all([
-      fetch('../data/poems.json').then(r => r.json()),
-      fetch('../data/articles.json').then(r => r.json()),
-      fetch('../data/images.json').then(r => r.json()),
-      fetch('../data/route.json').then(r => r.json()),
-      fetch('../data/audio.json').then(r => r.json()),
-      fetch('../data/appreciation.json').then(r => r.json()),
-      fetch('../data/remember.json').then(r => r.json()),
-      fetch('../data/biography.json').then(r => r.json())
-    ])
-    data.poems = p.poems, data.articles = a.articles, data.images = i.images
-    data.tour = r.tour || []; data.tourAudio = r.audio || ''; data.audio = au.audio || []
-    data.appreciation = ap.appreciation || []
-    data.remember = rm.items || []
-    data.biography = bg.chapters || []
+    const keys = NEEDS[page] || []
+    const list = await Promise.all(keys.map(k => fetch(DATA_URLS[k]).then(r => r.json())))
+    keys.forEach((k, i) => {
+      const d = list[i]
+      if (k === 'poems') data.poems = d.poems || []
+      else if (k === 'articles') data.articles = d.items || []
+      else if (k === 'remember') data.remember = d.items || []
+      else if (k === 'biography') data.biography = d.chapters || []
+      else if (k === 'appreciation') data.appreciation = d.appreciation || []
+      else if (k === 'images') data.images = d.images || []
+      else if (k === 'route') { data.tour = d.tour || []; data.tourAudio = d.audio || '' }
+      else data[k] = d
+    })
+    data.feed = data.feed || {}
     renderers[page] && renderers[page]()
     initFX()
   }
@@ -42,17 +62,22 @@
 
   /* ---------- 首页 ---------- */
   function home() {
-    $('#poemCount').textContent = data.poems.length
-    $('#artCount').textContent = data.articles.length
-    $('#imgCount').textContent = data.images.length
+    const f = data.feed || {}
+    $('#poemCount').textContent = f.poemCount || 0
+    $('#artCount').textContent = f.artCount || 0
+    $('#imgCount').textContent = f.imgCount || 0
     // 随机今日一句（点击查看全诗）
-    const p = data.poems[Math.floor(Math.random() * data.poems.length)]
-    $('#dailyTitle').textContent = p.title + ' · ' + (p.year || '')
-    $('#dailyLine').textContent = (p.highlight || '').replace(/^>+\s*/gm, '').trim()
-    const dc = $('#dailyCard')
-    if (dc) dc.href = './poems.html#/p/' + encodeURIComponent(p.id)
+    const all = f.poems || []
+    const p = all.length ? all[Math.floor(Math.random() * all.length)] : null
+    if (p) {
+      $('#dailyTitle').textContent = p.title + ' · ' + (p.year || '')
+      $('#dailyLine').textContent = p.highlight || ''
+      const dc = $('#dailyCard')
+      if (dc) dc.href = './poems.html#/p/' + encodeURIComponent(p.id)
+    }
     // 今日推荐文章（按日期轮换，点击进入文章页）
-    const rec = data.articles[dayOfYear() % Math.max(1, data.articles.length)]
+    const arts = f.articles || []
+    const rec = arts.length ? arts[dayOfYear() % arts.length] : null
     if (rec) {
       $('#recTitle') && ($('#recTitle').textContent = '《' + rec.title + '》' + (rec.juan ? ' · ' + rec.juan : ''))
       const line = (rec.excerpt || '').replace(/\s+/g, '')
@@ -183,13 +208,19 @@
     window.addEventListener('hashchange', routeArticle)
     routeArticle()
   }
-  function routeArticle() {
+  const artCache = {}
+  async function openArticleBody(id) {
+    if (!artCache[id]) artCache[id] = fetch('../data/articles/' + encodeURIComponent(id) + '.json').then(r => r.json())
+    return artCache[id]
+  }
+  async function routeArticle() {
     const m = location.hash.match(/^#\/a\/(.+)$/)
     const dv = $('#articleDetail')
     const lv = $('#articleList')
     if (m) {
-      const a = data.articles.find(x => x.id === decodeURIComponent(m[1]))
-      if (a) {
+      try {
+        const a = await openArticleBody(decodeURIComponent(m[1]))
+        if (!a || !a.title) return
         lv.classList.add('hidden'); dv.classList.remove('hidden')
         dv.innerHTML = `
           <span class="backlink" onclick="location.hash=''">← 返回文章集</span>
@@ -197,8 +228,8 @@
           <h1 style="font-family:var(--serif);font-size:38px;letter-spacing:.14em;margin:10px 0 24px">${esc(a.title)}</h1>
           <div class="article-body">${escLines(a.text)}</div>`
         dv.scrollIntoView({ block: 'start' })
-        return
-      }
+      } catch (e) { /* 加载失败则不切换 */ }
+      return
     }
     if (dv) { lv.classList.remove('hidden'); dv.classList.add('hidden') }
   }

@@ -151,7 +151,15 @@ async function main() {
     })
   }
   await writeFile(join(OUT_DIR, 'poems.json'), JSON.stringify({ poems }, null, 1), 'utf8')
-  await writeFile(join(OUT_DIR, 'articles.json'), JSON.stringify({ articles }, null, 1), 'utf8')
+  // 文章按需拆分：索引（小）+ 每篇独立文件（点开才下载），供移动端首屏轻量化
+  const ART_OUT = join(OUT_DIR, 'articles')
+  await mkdir(ART_OUT, { recursive: true })
+  const articlesIndex = []
+  for (const a of articles) {
+    articlesIndex.push({ id: a.id, title: a.title, year: a.year, juan: a.juan, excerpt: a.excerpt })
+    await writeFile(join(ART_OUT, a.id + '.json'), JSON.stringify(a, null, 1), 'utf8')
+  }
+  await writeFile(join(OUT_DIR, 'articles-index.json'), JSON.stringify({ items: articlesIndex }, null, 1), 'utf8')
 
   // 图片库：扫描 素材/图片 下的图片文件，并复制进站点 public/images
   // 城墙一角.jpg 仅作全站底部衬底背景使用，不录入图库
@@ -253,6 +261,19 @@ async function main() {
     tour,
     audio: tourFile ? tourFile.file : ''
   }, null, 1), 'utf8')
+
+  // 首页饲料（今日一句 + 今日推荐 + 计数）：只含摘要，保证首屏轻量
+  const feed = {
+    poemCount: poems.length,
+    artCount: articles.length,
+    imgCount: images.length,
+    poems: poems.map(p => ({
+      id: p.id, title: p.title, year: p.year, genre: p.genre,
+      highlight: (p.highlight || '').replace(/^>+\s*/gm, '').trim()
+    })),
+    articles: articles.map(a => ({ id: a.id, title: a.title, year: a.year, juan: a.juan, excerpt: a.excerpt }))
+  }
+  await writeFile(join(OUT_DIR, 'feed.json'), JSON.stringify(feed, null, 1), 'utf8')
 
   console.log(`poems: ${poems.length} 篇（含译文 ${poems.filter(p => p.translation !== '（译文待补）').length} 篇，含名句 ${poems.filter(p => p.highlight).length} 篇）`)
   console.log(`articles: ${articles.length} 篇`)
