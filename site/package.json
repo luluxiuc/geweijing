@@ -1,0 +1,16 @@
+{
+  "name": "geweijing-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "歌未竟 · 纪念毛泽东同志逝世五十周年网站（素材库驱动的内容站）",
+  "scripts": {
+    "data": "node scripts/build-data.mjs",
+    "dev": "vite",
+    "build": "node scripts/build-data.mjs && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

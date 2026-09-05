@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>歌未竟 · 请稍候</title>
+<style>
+  html,body{margin:0;height:100%;background:#C8102E;color:#fff;font-family:"Songti SC","SimSun",serif;display:flex;align-items:center;justify-content:center}
+  .w{text-align:center}
+  .t{font-size:34px;letter-spacing:.5em;padding-left:.5em;margin-bottom:18px}
+  .s{font-size:13px;opacity:.75;letter-spacing:.2em}
+</style>
+</head>
+<body>
+<div class="w">
+  <div class="t">歌未竟</div>
+  <div class="s">久有凌云志，重上井冈山</div>
+</div>
+<script>
+// 设备识别：手机 → /m/ ，电脑 → /d/
+;(function () {
+  var ua = navigator.userAgent || ''
+  var isMobile = /Android|iPhone|iPod|Opera Mini|Mobile|Windows Phone/i.test(ua)
+  var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches
+  var touch = 'ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0
+  var tiny = window.innerWidth <= 820
+  var target = (isMobile || (tiny && (coarse || touch))) ? 'm/' : 'd/'
+  setTimeout(function () { location.replace(target) }, 350)
+})()
+</script>
+</body>
+</html>

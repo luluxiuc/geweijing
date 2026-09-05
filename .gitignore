@@ -1,0 +1,6 @@
+# 构建产物与依赖
+site/node_modules/
+site/dist/
+*.zip
+Thumbs.db
+.DS_Store

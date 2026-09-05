@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>诗词巡礼 · 歌未竟</title>
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="stylesheet" href="./css/site.css">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css"></noscript>
+</head>
+<body data-page="tour">
+<div class="page-bg" aria-hidden="true"></div>
+<nav class="nav"><div class="wrap">
+  <a class="logo" href="./index.html">歌未竟</a>
+  <ul>
+    <li><a href="./index.html">首页</a></li>
+    <li><a href="./poems.html">诗词集</a></li>
+    <li><a href="./appreciation.html">名篇赏析</a></li>
+    <li><a href="./articles.html">文章</a></li>
+    <li><a href="./memory.html">他人之眼</a></li>
+    <li><a class="on" href="./tour.html">巡礼</a></li>
+    <li><a href="./gallery.html">图库</a></li>
+    <li><a href="./about.html">关于</a></li>
+  </ul>
+</div></nav>
+
+<section style="padding-top:60px">
+  <div class="wrap">
+    <div class="sec-head"><h2>诗词巡礼</h2><span class="en">THE JOURNEY</span></div>
+    <p style="max-width:640px;font-size:14px;line-height:2;color:#6d6d6d;margin-bottom:10px">
+      沿着诗词的创作时间轴，从 1915 年的挽歌走到 1965 年的井冈山。点击诗题可进入全诗与译文。
+    </p>
+    <div class="pl-launch">
+      <button class="btn solid" id="startTour">▶ 开始巡礼展播</button>
+      <p class="pl-note" id="routeCount">…</p>
+      <p class="pl-note">沿路线自动播放：精选词句 · 原文逐行浮现 · 白话译文 · 配图 · 配乐与朗诵（素材放入后自动启用）</p>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</section>
+
+<div id="player" class="pl-layer hidden"></div>
+
+<footer>
+  <div class="logo">歌未竟</div>
+  歌未竟，东方白。<br>
+  © 2026 歌未竟
+</footer>
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
