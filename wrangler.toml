@@ -1,5 +1,7 @@
 name = "geweijing"
 compatibility_date = "2026-02-16"
 
-# 构建产物目录（注意：仓库根目录下执行 git 集成构建）
-pages_build_output_dir = "site/dist"
+# Cloudflare Pages（Git 集成）现在以统一 wrangler 部署运行静态站点：
+# 产物目录在构建命令行里生成（cd site && npm run build），这里只声明目录。
+[assets]
+directory = "site/dist"
