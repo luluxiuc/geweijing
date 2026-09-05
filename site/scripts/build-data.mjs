@@ -10,8 +10,9 @@
  */
 import { readdir, readFile, writeFile, access, stat, mkdir, copyFile } from 'fs/promises'
 import { resolve, join, extname } from 'path'
+import { fileURLToPath } from 'url'
 
-const ROOT = resolve(import.meta.dirname, '..')
+const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
 const POEM_DIR = resolve(ROOT, '..', '素材', '文字', '诗词')
 const ART_DIR = resolve(ROOT, '..', '素材', '文字', '文章')
 const APPR_DIR = resolve(ROOT, '..', '素材', '文字', '赏析')
